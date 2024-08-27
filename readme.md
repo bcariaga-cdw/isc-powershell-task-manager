@@ -29,8 +29,9 @@ You can schedule the PowerShell script using a Cron Job or the built-in Windows 
 ## 3. Setup Custom PowerShell Scripts
 
 # Use Cases
+## Lifecycle: Remove Mailbox on Termination
 ## Role Assignment: Active Directory After Creation Enables Mailbox
-## Name Change (Workflow)
+## Workflow: Name Change
 
 # Drawbacks
 - Potentially misleading audit logs for entitlements associated with the delimited file source.
