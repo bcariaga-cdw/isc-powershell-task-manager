@@ -46,6 +46,7 @@ To implement this solution, it is essential to configure a delimited file source
 |errors|Yes|No|
 
 **Entitlement Schema**
+
 Create a new entitlement type called "action" with a single attribute called "name". 
 
 **Correlation**
@@ -59,6 +60,7 @@ Create a new entitlement type called "action" with a single attribute called "na
 |id|uid|
 
 **Entitlement Upload**
+
 Upload the actions you wish to use for the PowerShell script execution. For example "handleHomeDrive". 
 
 ### 2. Setup PowerShell 
