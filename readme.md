@@ -26,7 +26,7 @@ The PowerShell script will be scheduled to run periodically to query open work i
 You can schedule the PowerShell script using a Cron Job or the built-in Windows Task Scheduler. Set the script to run as frequently as allowed by the scheduler to minimize processing time.
 
 # Step-by-Step Usage
-## 1. Setup a Delimited File Source
+### 1. Setup a Delimited File Source
 A delimited file source is necessary to setup for this solution. Begin by creating a new source with a delimited file connector type. For ease of setup, an export of the source is provided in the `imports` folder to be directly imported to a tenant using SP-Config. If setting up manually, the source will need the following configuration:
 
 **Account Schema** 
@@ -54,7 +54,7 @@ Create a new entitlement type called "action" with a single attribute called "na
 **Entitlement Upload**
 Upload the actions you wish to use for the PowerShell script execution. For example "handleHomeDrive". 
 
-## 2. Setup PowerShell 
+### 2. Setup PowerShell 
 To setup the PowerShell portion, download and place the folder `powershell-script` on a Windows machine. This can easily be placed onto the IQService machine. Ensure your machine has the SailPoint PowerShell SDK installed and meets the mimumum requirements (https://developer.sailpoint.com/docs/tools/sdk/powershell).
 ### 2.1 Config.json File
 The `config.json` file included will need to be configured for your specific environment. Here is an example of the file: 
@@ -96,14 +96,14 @@ The Authentication portion is where to define the Personal Access Token for your
 This encryption process can be easily modified to suite your preferred method by modifying the `dist/util/Load-Token.ps1` file. 
 
 The Script portion is where you will define your source id and application name of the source that was configured for this process. These fields are both necessary for the script to identify which work items relate to this process. The actions enable you to directly map the names of the entitlements on the source to the scripts located in the PowerShell Task Manager. 
-### 2.2 Set the Path in the main.ps1 file
+#### 2.2 Set the Path in the main.ps1 file
 At the top of the main.ps1 file, set the path for where this folder resides on your system.
 For Example: `$script:SCRIPT_PATH = "C:\SailPoint\Scripts\powershell-task-manager"`
-### 2.3 Windows Task Scheduler
+#### 2.3 Windows Task Scheduler
 Use the Windows Task Scheduler or another scheduling service to run the `main.ps1` periodically. Recommended to run every 5 minutes. 
 
 Note: Ensure that this is set to run using a PowerShell version 6.2 or greater.
-## 3. Setup Custom PowerShell Scripts
+### 3. Setup Custom PowerShell Scripts
 Each action defined as an entilement will need a corresponding script file defined in the `scripts` folder. Each of these should be defined in the mapping stated in the `config.json` file. Each of these scripts must have:
 - The script name defined at the top of the file like such: `$script:NAME = "Home Drive Script"`
 - A method called `Invoke-Action` and takes in two arguments: the account id (uid) of the identity and the start time of the run.
@@ -131,9 +131,9 @@ function Invoke-Action ($account, $startTime) {
 ```
 
 # Example Use Cases
-## Lifecycle: Remove Mailbox on Termination
-## Role Assignment: Active Directory After Creation Enables Mailbox
-## Workflow: Name Change
+### Lifecycle: Remove Mailbox on Termination
+### Role Assignment: Active Directory After Creation Enables Mailbox
+### Workflow: Name Change
 
 # Drawbacks
 This solution is unorthodox for the ISC architecture and does contain a few drawbacks: 
