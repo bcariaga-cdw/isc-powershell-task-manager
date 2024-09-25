@@ -11,11 +11,14 @@ This guide offers a comprehensive solution for executing PowerShell scripts with
 - **Workflow Processing**: Integrate PowerShell script execution within ISC workflows.
 
 # Solution
-This solution demonstrates how ISC can handle PowerShell script execution based on identity events, improving automation and visibility by leveraging native ISC features, with additional flexibility through the PowerShell task manager.
 ![Process Flow](https://github.com/bcariaga-cdw/isc-powershell-task-manager/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Process%20Flow.png)
+
 Beginning with an Identity, which triggers certain Actions through ISC processes such as Lifecycle Manager (LCM), Role Assignments, or Workflows. These actions grant an Entitlement to the identity, which is the key event that drives the process. Once the entitlement is granted, a work item is pushed to the ISC Task Manager. The ISC Task Manager manages the queue of work items, which represent tasks associated with the entitlement. A PowerShell Script periodically checks the work item queue (e.g., every 5 minutes) for new tasks. When a new work item related to the entitlement is found, the script retrieves it and executes the specified PowerShell script based on the entitlements granted. After executing the script, the PowerShell task manager writes the results back to IdentityNow (the ISC platform), completing the loop and ensuring auditability.
+
+This solution demonstrates how ISC can handle PowerShell script execution based on identity events, improving automation and visibility by leveraging native ISC features, with additional flexibility through the PowerShell task manager.
 ## Sequence
 ![Sequence Diagram](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Sequence%20Diagram.png)
+
 **Delimited File Source**
 
 The delimited file source serves as the foundation for event triggering and auditing within ISC for this solution. It will store accounts for any user who has been processed and will be automatically updated and maintained by the PowerShell script to ensure auditability.
