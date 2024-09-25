@@ -17,14 +17,17 @@ Beginning with an Identity, which triggers certain Actions through ISC processes
 ## Sequence
 ![Sequence Diagram](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Sequence%20Diagram.png)
 **Delimited File Source**
+
 The delimited file source serves as the foundation for event triggering and auditing within ISC for this solution. It will store accounts for any user who has been processed and will be automatically updated and maintained by the PowerShell script to ensure auditability.
 
 Additionally, the delimited file source will include an entitlement for each script required to run. For instance, if a script for mailbox creation is needed, an entitlement such as "Enable Mailbox" will be included. 
 
 **ISC (Work Items)**
+
 When an entitlement is added to a user in a delimited file source, ISC will automatically create a work item for the manual addition of this entitlement, effectively establishing a queue for the required script executions. This work item queue will serve as the dataset for the script, indicating what needs to be processed.
 
 **PowerShell Script**
+
 The PowerShell script will be scheduled to run periodically to query open work items in the ISC Queue. Based on the details of these work items, the script will execute and log auditing information to an account entry in the delimited file source.
 
 You can schedule the PowerShell script using a Cron Job or the built-in Windows Task Scheduler. Set the script to run as frequently as allowed by the scheduler to minimize processing time.
