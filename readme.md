@@ -11,7 +11,7 @@ This guide offers a comprehensive solution for executing PowerShell scripts with
 - **Workflow Processing**: Integrate PowerShell script execution within ISC workflows.
 
 # Solution
-![Process Flow](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Conceptual%20Role%20Add%20Process%20Flow.png)
+![Process Flow](https://github.com/bcariaga-cdw/isc-powershell-task-manager/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Process%20Flow.png)
 ## Sequence
 ![Sequence Diagram](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Sequence%20Diagram.png)
 #### Delimited File Source
