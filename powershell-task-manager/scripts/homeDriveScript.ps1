@@ -1,5 +1,5 @@
 $script:NAME = "Home Drive Script"
-function Run-Action ($account, $start) {
+function Invoke-Action ($account, $start) {
     try {
         $start = (Get-Date).toString("MM-dd-yyyy HH:mm:ss")
         Write-Log "$script:NAME has started."
@@ -9,7 +9,7 @@ function Run-Action ($account, $start) {
         throw "Error Occured"
 
         Write-Log "$script:NAME has finished."
-        return [RunResponse]::new("COMPLETED")
+        return [RunResponse]::new("COMPLETED", $null)
     } catch {
         return [RunResponse]::new("ERROR", "($start) $_")
     }

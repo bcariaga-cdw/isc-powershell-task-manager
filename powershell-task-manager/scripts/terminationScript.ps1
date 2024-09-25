@@ -1,5 +1,5 @@
 $script:NAME = "Termination Script"
-function Run-Action ($account) {
+function Invoke-Action ($account) {
     try {
         $start = (Get-Date).toString("MM-dd-yyyy HH:mm:ss")
         Write-Log "$script:NAME has started."
@@ -8,7 +8,7 @@ function Run-Action ($account) {
         throw "Couldn't find user."
 
         Write-Log "$script:NAME has finished."
-        return [RunResponse]::new("COMPLETED")
+        return [RunResponse]::new("COMPLETED", $null)
     } catch {
         return [RunResponse]::new("NO_RETRY", "($start) $_")
     }

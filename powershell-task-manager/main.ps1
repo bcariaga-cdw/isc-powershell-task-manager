@@ -127,7 +127,7 @@ $runtime = Measure-Command -Expression {
 
                     # Run the action.
                     try {
-                        $run = Run-Action $taskEntry.id $start
+                        $run = Invoke-Action $taskEntry.id $start
                     } catch {
                         $run = [RunResponse]::new("NO_RETRY", ($_ | Out-String))
                     }
