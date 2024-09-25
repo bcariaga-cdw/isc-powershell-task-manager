@@ -104,7 +104,31 @@ Use the Windows Task Scheduler or another scheduling service to run the `main.ps
 
 Note: Ensure that this is set to run using a PowerShell version 6.2 or greater.
 ## 3. Setup Custom PowerShell Scripts
+Each action defined as an entilement will need a corresponding script file defined in the `scripts` folder. Each of these should be defined in the mapping stated in the `config.json` file. Each of these scripts must have:
+- The script name defined at the top of the file like such: `$script:NAME = "Home Drive Script"`
+- A method called `Invoke-Action` and takes in two arguments: the account id (uid) of the identity and the start time of the run.
+- The method must return an object of type `RunResponse`. For example: `[RunResponse]::new("COMPLETED", $null)`. This method takes in two parameters: the status and error message. The available response statuses are `COMPLETED`, `ERROR`, or `NO_RETRY`. An `ERROR` response will be retried until a `NO_RETRY` is received. 
 
+Here is an example of a script:
+```powershell
+# Define a readable name for this script.
+$script:NAME = "Template Script"
+function Invoke-Action ($account, $startTime) {
+    try {
+        Write-Log "$script:NAME has started."
+
+        # DO SCRIPT LOGIC
+
+        Write-Log "$script:NAME has finished."
+
+        # Return a success status.
+        return [RunResponse]::new("COMPLETED", $null)
+    } catch {
+        # Return an error status (NO_RETRY or ERROR)
+        return [RunResponse]::new("ERROR", "($startTime) $_")
+    }
+}
+```
 
 # Example Use Cases
 ## Lifecycle: Remove Mailbox on Termination
@@ -113,6 +137,6 @@ Note: Ensure that this is set to run using a PowerShell version 6.2 or greater.
 
 # Drawbacks
 This solution is unorthodox for the ISC architecture and does contain a few drawbacks: 
-- Potentially misleading audit logs for entitlements associated with the delimited file source.
+- Misleading audit logs for entitlements associated with the delimited file source.
 - Script execution audit events appear as an account on an identity, potentially leading to confusion.
 - Unconventional use of work items, sources, and accounts.
