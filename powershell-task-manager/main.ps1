@@ -1,4 +1,4 @@
-$script:SCRIPT_PATH = "C:\Users\bradcar\OneDrive - CDW\Documents\Projects\Personal\QUEUE\queue-scripts"
+$script:SCRIPT_PATH = "C:\SailPoint\Scripts\powershell-task-manager"
 
 $runtime = Measure-Command -Expression { 
     <#######################################################################

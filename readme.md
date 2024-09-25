@@ -12,11 +12,13 @@ This guide offers a comprehensive solution for executing PowerShell scripts with
 
 # Solution
 ![Process Flow](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Conceptual%20Role%20Add%20Process%20Flow.png)
+## Sequence
+![Sequence Diagram](https://github.com/bcariaga-cdw/queue-scripts/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Sequence%20Diagram.png)
 #### Delimited File Source
 The delimited file source serves as the foundation for event triggering and auditing within ISC for this solution. It will store accounts for any user who has been processed and will be automatically updated and maintained by the PowerShell script to ensure auditability.
 
 Additionally, the delimited file source will include an entitlement for each script required to run. For instance, if a script for mailbox creation is needed, an entitlement such as "Enable Mailbox" will be included. 
-#### Work Items
+#### ISC (Work Items)
 When an entitlement is added to a user in a delimited file source, ISC will automatically create a work item for the manual addition of this entitlement, effectively establishing a queue for the required script executions. This work item queue will serve as the dataset for the script, indicating what needs to be processed.
 #### PowerShell Script
 The PowerShell script will be scheduled to run periodically to query open work items in the ISC Queue. Based on the details of these work items, the script will execute and log auditing information to an account entry in the delimited file source.
@@ -25,15 +27,92 @@ You can schedule the PowerShell script using a Cron Job or the built-in Windows 
 
 # Step-by-Step Usage
 ## 1. Setup a Delimited File Source
-## 2. Setup PowerShell Script
+A delimited file source is necessary to setup for this solution. Begin by creating a new source with a delimited file connector type. For ease of setup, an export of the source is provided in the `imports` folder to be directly imported to a tenant using SP-Config. If setting up manually, the source will need the following configuration:
+
+**Account Schema** 
+|Attribute Name|Multivalued|Entitlement|
+|--------------|-----------|-----------|
+|id|No|No|
+|actions|Yes|Yes|
+|statuses|Yes|No|
+|transactions|Yes|No|
+|errors|Yes|No|
+
+**Entitlement Schema**
+Create a new entitlement type called "action" with a single attribute called "name". 
+
+**Correlation**
+|Identity Attribute|Operation|Account Attribute|
+|------------------|---------|-----------------|
+|Username|equals|id|
+
+**Create Provisioning Policy**
+|Account Attribute|Identity Attribute|
+|-----------------|------------------|
+|id|uid|
+
+**Entitlement Upload**
+Upload the actions you wish to use for the PowerShell script execution. For example "handleHomeDrive". 
+
+## 2. Setup PowerShell 
+To setup the PowerShell portion, download and place the folder `powershell-script` on a Windows machine. This can easily be placed onto the IQService machine. Ensure your machine has the SailPoint PowerShell SDK installed and meets the mimumum requirements (https://developer.sailpoint.com/docs/tools/sdk/powershell).
+### 2.1 Config.json File
+The `config.json` file included will need to be configured for your specific environment. Here is an example of the file: 
+```json
+{
+    "General": {
+        "tenant": "<tenant-name>",
+        "domain": "identitynow",
+        "sdkVersion": "1.3.0",
+        "logFileName": "log",
+        "logLevel": 3
+    },
+    "Authentication": {
+        "<tenant-name>": {
+            "clientID": "<client-id>",
+            "clientSecret": "<client-secret-encrypted>"
+        }
+    },
+    "Script": {
+        "sourceId": "<source-id-delimited-file-source>",
+        "applicationName": "<application-name-without-[source]>",
+        "actions": {
+            "emailScript": "emailScript.ps1",
+            "homeDriveScript": "homeDriveScript.ps1",
+            "terminationScript": "terminationScript.ps1",
+            "template": "template.ps1"
+        }
+    }
+}
+```
+The General portion includes the tenant to connect to and the log settings. You can change the name of the log file and the log level. The log levels supported are: 0 to Disable Logging, 1 for Error only, 2 for Error & Info, 3 for Error, Info, & Debug.
+
+The Authentication portion is where to define the Personal Access Token for your tenant. The key must match the tenant name configured in the General section. The current script uses Windows Credential Manager to encrypt the secret so it is not shown in plain text. To configure this follow these steps: 
+1. Run PowerShell as User Exectuing the Script. 
+2. Run the following command: `ConvertFrom-SecureString -SecureString $(Read-Host -AsSecureString)`
+3. Paste the secret and copy the encrypted value. 
+4. Enter the encrypted value in the config.json. 
+
+This encryption process can be easily modified to suite your preferred method by modifying the `dist/util/Load-Token.ps1` file. 
+
+The Script portion is where you will define your source id and application name of the source that was configured for this process. These fields are both necessary for the script to identify which work items relate to this process. The actions enable you to directly map the names of the entitlements on the source to the scripts located in the PowerShell Task Manager. 
+### 2.2 Set the Path in the main.ps1 file
+At the top of the main.ps1 file, set the path for where this folder resides on your system.
+For Example: `$script:SCRIPT_PATH = "C:\SailPoint\Scripts\powershell-task-manager"`
+### 2.3 Windows Task Scheduler
+Use the Windows Task Scheduler or another scheduling service to run the `main.ps1` periodically. Recommended to run every 5 minutes. 
+
+Note: Ensure that this is set to run using a PowerShell version 6.2 or greater.
 ## 3. Setup Custom PowerShell Scripts
 
-# Use Cases
+
+# Example Use Cases
 ## Lifecycle: Remove Mailbox on Termination
 ## Role Assignment: Active Directory After Creation Enables Mailbox
 ## Workflow: Name Change
 
 # Drawbacks
+This solution is unorthodox for the ISC architecture and does contain a few drawbacks: 
 - Potentially misleading audit logs for entitlements associated with the delimited file source.
 - Script execution audit events appear as an account on an identity, potentially leading to confusion.
 - Unconventional use of work items, sources, and accounts.
