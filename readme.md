@@ -2,15 +2,17 @@
 In this blog post, we will delve into an innovative solution for executing PowerShell scripts by leveraging built-in Identity Security Cloud (ISC) features and events, all while enabling user interface-based auditing of these executions. This guide will outline the proposed solution architecture and provide a step-by-step approach to implementing and utilizing this solution effectively.
 
 # Background
-In the current state of Identity Security Cloud, PowerShell scripts can only be triggered via Active Directory connector provisioning events, specifically Before/After Create or Modify Rules. I've encountered solutions that utilize dummy security groups or synchronize on attributes that are not necessarily useful within the system. However, these approaches come with limitations, such as restricted triggering of events or the creation of audit trails that reflect the addition of fake access, rendering them ineffective or misleading. Additionally, the rules mentioned are designed to be fire-and-forget, making it challenging to trace errors and retry if necessary.
+In the current state of Identity Security Cloud, PowerShell scripts can only be triggered via Active Directory connector provisioning events, specifically Before/After Create or Modify Rules. I've encountered solutions that utilize dummy security groups or synchronize on attributes as an alternative to the Out-the-Box functionality. However, these approaches are stateless, synchrounous processes. Script execution is tied to a succesful provisioning event with no retry-ability and status of execution brought into the identity level or ISC. 
 
 # Objectives
-This guide offers a comprehensive solution for executing PowerShell scripts within the Identity Security Cloud (ISC) environment, addressing the limitations of current methods while enhancing the auditing process and retry-ability. By leveraging out-of-the-box ISC features, this approach minimizes the need for additional external architecture, utilizing built-in ISC events to create a more robust and efficient method for script execution. Key events for PowerShell execution in this solution include:
+To workaround the caveats with the current architecture, a nifty solution was developed utilizing the Out-the-Box Task Manager functionality of ISC to create a mechnism for queueing script executions to be run on demand, retry-able, and promote the status of the executions to the identity level in ISC. 
+
+By leveraging out-of-the-box ISC features, this approach minimizes the need for additional external architecture, utilizing built-in ISC events to create a more robust and efficient method for script execution. Key events for PowerShell execution in this solution include:
 - **Lifecycle Changes**: Enable the triggering of PowerShell scripts based on identity lifecycle events.
 - **Role Assignment:** Utilize role assignments as a trigger for script execution.
 - **Workflow Processing**: Integrate PowerShell script execution within ISC workflows.
 
-# Solution
+# Solution Details
 ![Process Flow](https://github.com/bcariaga-cdw/isc-powershell-task-manager/blob/main/images/Task%20Queue%20for%20Scripts%20-%20Process%20Flow.png)
 
 Beginning with an Identity, which triggers certain Actions through ISC processes such as Lifecycle Manager (LCM), Role Assignments, or Workflows. These actions grant an Entitlement to the identity, which is the key event that drives the process. Once the entitlement is granted, a work item is pushed to the ISC Task Manager. The ISC Task Manager manages the queue of work items, which represent tasks associated with the entitlement. A PowerShell Script periodically checks the work item queue (e.g., every 5 minutes) for new tasks. When a new work item related to the entitlement is found, the script retrieves it and executes the specified PowerShell script based on the entitlements granted. After executing the script, the PowerShell task manager writes the results back to IdentityNow (the ISC platform), completing the loop and ensuring auditability.
