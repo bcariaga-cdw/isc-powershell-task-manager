@@ -105,7 +105,7 @@ The **General** section contains the tenant information and log settings. You ca
 - `2`: Error & Info
 - `3`: Error, Info, & Debug
 
-The **Authentication** section is where you define the Personal Access Token for your tenant. The key must match the tenant name specified in the General section. The script uses the Windows Credential Manager to encrypt the secret, preventing it from being displayed in plain text. To configure this, follow these steps:
+The **Authentication** section is where you define the Personal Access Token for your tenant. The key must match the tenant name specified in the General section. The script uses the Windows Data Protection API to encrypt the secret, preventing it from being displayed in plain text. To configure this, follow these steps:
 1. Run PowerShell as User Exectuing the Script. 
 2. Run the following command: `ConvertFrom-SecureString -SecureString $(Read-Host -AsSecureString)`
 3. Paste the secret and copy the encrypted value. 
