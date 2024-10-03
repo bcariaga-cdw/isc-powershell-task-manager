@@ -2,7 +2,7 @@
     "General": {
         "tenant": "<tenant-name>",
         "domain": "identitynow",
-        "sdkVersion": "1.3.0",
+        "sdkVersion": "1.4.3",
         "logFileName": "log",
         "logLevel": 3
     },

@@ -41,7 +41,7 @@ $runtime = Measure-Command -Expression {
 
             # Fetch Open Tasks
             $allWorkItems = [System.Collections.ArrayList] @()
-            $allWorkItems += (Invoke-Paginate -Function Get-WorkItems -Increment 250 -Limit 30000 -InitialOffset 0)
+            $allWorkItems += (Invoke-Paginate -Function Get-V2024CompletedWorkItems -Increment 250 -Limit 30000 -InitialOffset 0)
             
             Write-Host $allWorkItems.Count
 
@@ -92,7 +92,7 @@ $runtime = Measure-Command -Expression {
                     $taskEntry.SetId($account)
                     
                     # Check if the current account exists.
-                    $currentAccount = Get-Accounts -Filters "sourceId eq `"$($script:GLOBAL_CONFIG.Script.sourceId)`" and nativeIdentity eq `"$account`""
+                    $currentAccount = Get-V2024Accounts -Filters "sourceId eq `"$($script:GLOBAL_CONFIG.Script.sourceId)`" and nativeIdentity eq `"$account`""
                     if ($null -ne $currentAccount) {
                         Write-Log "Found current account: $($currentAccount.id)"
                         $currentAccountTaskEntry = [TaskEntry]::new($currentAccount.attributes.id, $currentAccount.attributes.actions, $currentAccount.attributes.statuses, $currentAccount.attributes.transactions, $currentAccount.attributes.errors)
@@ -151,21 +151,21 @@ $runtime = Measure-Command -Expression {
                 # If task ID is not filled, skip. 
                 if ([string]::IsNullOrEmpty($taskEntry.id)) { 
                     if ($forceCloseWorkItem -eq $true) {
-                        $res = Close-WorkItem -Id $workItem.id 
+                        $res = Complete-V2024WorkItem -Id $workItem.id 
                         Write-Log "Work item $($workItem.id) has been closed by force."
                     }                    
                     continue 
                 }
 
                 # Check if current account exists
-                $currentAccount = Get-Accounts -Filters "sourceId eq `"$($script:GLOBAL_CONFIG.Script.sourceId)`" and nativeIdentity eq `"$($taskEntry.id)`""
+                $currentAccount = Get-V2024Accounts -Filters "sourceId eq `"$($script:GLOBAL_CONFIG.Script.sourceId)`" and nativeIdentity eq `"$($taskEntry.id)`""
                 if ($null -eq $currentAccount) {
                     # Create New Account on IDN
                     Write-Log "Creating IDN record for $($taskEntry.id): $($taskEntry.actions -join ",")"
                     Write-Log ($taskEntry | Out-String) 3
 
                     $accountAttributesCreate = Initialize-AccountAttributesCreate -Attributes ($taskEntry.ConvertForCreate())
-                    $res = New-Account -AccountAttributesCreate $accountAttributesCreate
+                    $res = New-V2024Account -AccountAttributesCreate $accountAttributesCreate
 
                     Write-Log "Created account with id $($res.id)"
                 } else {
@@ -178,14 +178,14 @@ $runtime = Measure-Command -Expression {
                     Write-Log ($taskEntry | Out-String) 3
 
                     $attributes = Initialize-AccountAttributes -Attributes ($taskEntry.ConvertForUpdate())
-                    $res = Send-Account -Id $currentAccount.id -AccountAttributes $attributes
+                    $res = Send-V2024Account -Id $currentAccount.id -AccountAttributes $attributes
 
                     Write-Log "Updated account id $($myTask.id)"
                 }
 
                 # Close the task
                 if ($canCloseWorkItem -eq $true) {
-                    $res = Close-WorkItem -Id $workItem.id 
+                    $res = Complete-V2024WorkItem -Id $workItem.id 
                     Write-Log "Work item $($workItem.id) has been closed."
                 } else {
                     Write-Log "One or more actions failed and will be retried. The work item $($workItem.id) will not be closed."
