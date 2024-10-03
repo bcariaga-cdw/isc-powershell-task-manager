@@ -69,7 +69,7 @@ Create a new entitlement type called "action" with a single attribute called "na
 Upload the actions you wish to use for the PowerShell script execution. For example "handleHomeDrive". 
 
 ### 2. Setup PowerShell 
-To configure the PowerShell component, download the `powershell-script` folder and place it on a Windows machine, preferably on the IQService machine for convenience. Ensure that the machine has the SailPoint PowerShell SDK installed and meets the minimum requirements (https://developer.sailpoint.com/docs/tools/sdk/powershell).
+To configure the PowerShell component, download the `powershell-task-manager` folder and place it on a Windows machine, preferably on the IQService machine for convenience. Ensure that the machine has the SailPoint PowerShell SDK installed and meets the minimum requirements (https://developer.sailpoint.com/docs/tools/sdk/powershell).
 ### 2.1 Config.json File
 The `config.json` file included will need to be configured for your specific environment. Here is an example of the file: 
 ```json
@@ -111,7 +111,7 @@ The **Authentication** section is where you define the Personal Access Token for
 3. Paste the secret and copy the encrypted value. 
 4. Enter the encrypted value in the `config.json`. 
 
-This encryption process can be easily customized by editing the `dist/util/Load-Token.ps1` file to suit your preferred method.
+This encryption process can be easily customized by editing the `dist/util/Initialize-Token.ps1` file to suit your preferred method.
 
 The **Script** section is where you define the `source id` and `application name` of the source configured for this process. Both fields are required for the script to identify relevant work items. The actions allow direct mapping of source entitlement names to scripts in the PowerShell Task Manager.
 #### 2.2 Set the Path in the main.ps1 file
