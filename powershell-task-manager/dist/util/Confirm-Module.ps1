@@ -1,4 +1,4 @@
-function Load-Module ($name, $version) {
+function Confirm-Module ($name, $version) {
     # If module is imported say that and do nothing
     if (Get-Module -FullyQualifiedName $(@{ModuleName=$name;ModuleVersion=$version})) {
         #Write-Host "Required module $name is already imported."

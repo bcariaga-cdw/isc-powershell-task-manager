@@ -1,7 +1,7 @@
 # This method is used to load the environment variables for the SDK. 
 # ConvertFrom-SecureString -SecureString $(Read-Host -AsSecureString)
 
-function Load-Token () {
+function Initialize-Token () {
     try{
         $env:SAIL_BASE_URL="https://$($script:GLOBAL_CONFIG.General.tenant).api.$($script:GLOBAL_CONFIG.General.domain).com"
         $env:SAIL_CLIENT_ID=$script:GLOBAL_CONFIG.Authentication."$($script:GLOBAL_CONFIG.General.tenant)".clientID

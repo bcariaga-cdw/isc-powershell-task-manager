@@ -21,10 +21,10 @@ $runtime = Measure-Command -Expression {
             . "$($file.FullName)"
         }
 
-        Load-Module "PSSailPoint" $script:GLOBAL_CONFIG.General.sdkVersion
+        Confirm-Module "PSSailPoint" $script:GLOBAL_CONFIG.General.sdkVersion
 
         # Set PAT environment variables.
-        Load-Token
+        Initialize-Token
     }
     catch {
         Write-Log "Unable to load script: $_" 1
@@ -41,9 +41,7 @@ $runtime = Measure-Command -Expression {
 
             # Fetch Open Tasks
             $allWorkItems = [System.Collections.ArrayList] @()
-            $allWorkItems += (Invoke-Paginate -Function Get-V2024CompletedWorkItems -Increment 250 -Limit 30000 -InitialOffset 0)
-            
-            Write-Host $allWorkItems.Count
+            $allWorkItems += (Invoke-Paginate -Function Get-V2024WorkItems -Increment 250 -Limit 30000 -InitialOffset 0)
 
             # Exit Script If No Tasks
             if ($allWorkItems.Count -le 0 -or $null -eq $allWorkItems[0]) {
@@ -151,7 +149,7 @@ $runtime = Measure-Command -Expression {
                 # If task ID is not filled, skip. 
                 if ([string]::IsNullOrEmpty($taskEntry.id)) { 
                     if ($forceCloseWorkItem -eq $true) {
-                        $res = Complete-V2024WorkItem -Id $workItem.id 
+                        $res = Close-WorkItem -Id $workItem.id 
                         Write-Log "Work item $($workItem.id) has been closed by force."
                     }                    
                     continue 
@@ -180,12 +178,12 @@ $runtime = Measure-Command -Expression {
                     $attributes = Initialize-AccountAttributes -Attributes ($taskEntry.ConvertForUpdate())
                     $res = Send-V2024Account -Id $currentAccount.id -AccountAttributes $attributes
 
-                    Write-Log "Updated account id $($myTask.id)"
+                    Write-Log "Updated account id $($taskEntry.id)"
                 }
 
                 # Close the task
                 if ($canCloseWorkItem -eq $true) {
-                    $res = Complete-V2024WorkItem -Id $workItem.id 
+                    $res = Close-WorkItem -Id $workItem.id -WithHttpInfo -Verbose -Debug
                     Write-Log "Work item $($workItem.id) has been closed."
                 } else {
                     Write-Log "One or more actions failed and will be retried. The work item $($workItem.id) will not be closed."
