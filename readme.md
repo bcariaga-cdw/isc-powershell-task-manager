@@ -38,6 +38,10 @@ The PowerShell script will be scheduled to run periodically to query open work i
 You can schedule the PowerShell script using a Cron Job or the built-in Windows Task Scheduler. Set the script to run as frequently as allowed by the scheduler to minimize processing time.
 
 # Step-by-Step Usage
+### Prerequisites
+- [SailPoint PowerShell SDK](https://github.com/sailpoint-oss/powershell-sdk/tree/main/PSSailpoint) Version 1.4.3
+- PowerShell 6.2 or Greater
+
 ### 1. Setup a Delimited File Source
 To implement this solution, it is essential to configure a delimited file source. Start by creating a new source using the delimited file connector type. For convenience, an export of the source is available in the `imports` folder, which can be directly imported into a tenant using SP-Config. If you prefer to configure the source manually, the following settings are required:
 
