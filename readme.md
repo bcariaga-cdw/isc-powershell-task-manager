@@ -1,8 +1,8 @@
 # Introduction
 In this blog post, we will delve into an innovative solution for executing PowerShell scripts by leveraging built-in Identity Security Cloud (ISC) features and events, all while enabling user interface-based auditing of these executions. This guide will outline the proposed solution architecture and provide a step-by-step approach to implementing and utilizing this solution effectively.
 
-# Background
-In the current state of Identity Security Cloud, PowerShell scripts can only be triggered via Active Directory connector provisioning events, specifically Before/After Create or Modify Rules. I've encountered solutions that utilize dummy security groups or synchronize on attributes as an alternative to the Out-the-Box functionality. However, these approaches are stateless, synchrounous processes. Script execution is tied to a succesful provisioning event with no retry-ability and status of execution brought into the identity level or ISC. 
+# Overview
+In the current state of Identity Security Cloud, PowerShell scripts can only be triggered via Active Directory connector provisioning events, specifically Before/After Create or Modify Rules. However, these approaches are stateless, synchrounous processes. Script execution is tied to a succesful provisioning event with no retry-ability and status of execution brought into the identity level or ISC. 
 
 # Objectives
 To workaround the caveats with the current architecture, a nifty solution was developed utilizing the Out-the-Box Task Manager functionality of ISC to create a mechnism for queueing script executions to be run on demand, retry-able, and promote the status of the executions to the identity level in ISC. 
