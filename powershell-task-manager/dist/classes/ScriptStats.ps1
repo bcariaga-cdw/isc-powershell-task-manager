@@ -33,7 +33,7 @@ class ScriptStats {
 
     [void] Print () {
         Write-Log "Finished processing $($this.workItemsRun.Count) work items with $($this.actionsRun.Count) actions"
-        if ($this.workItemsRun.Count -gt 0) { Write-Log "Tasks Processed:`n$($this.workItemsRun -join ",")" 3 }
+        if ($this.workItemsRun.Count -gt 0) { Write-Log "Work Items Processed:`n$($this.workItemsRun -join ",")" 3 }
         if ($this.actionsRun.Count -gt 0) { Write-Log "Actions Processed:`n$($this.actionsRun -join ",")" 3 }
     }
 }
